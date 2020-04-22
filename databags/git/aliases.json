@@ -1,0 +1,12 @@
+{
+  "st": "status -sb",
+  "ci": "commit",
+  "co": "checkout",
+  "graph": "log --graph --oneline --decorate=short --branches='*'",
+  "br": "branch",
+  "df": "diff --color-words='[^[:space:]]'",
+  "sh": "show --color-words='[^[:space:]]'",
+  "lg": "log -p",
+  "serve": "!git daemon --reuseaddr --verbose --base-path=. --export-all ./.git",
+  "pend": "cherry -v origin/master"
+}

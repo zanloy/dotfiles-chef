@@ -3,11 +3,8 @@
 # Recipe: ruby
 #
 
-require 'etc'
-
 version = '2.6.5' # TODO: Put in databag(?)
-
-username = Etc.getpwuid['name']
+username = current_user
 
 # Install all the config files in ~/.*
 get_files_for('ruby').each do |file|

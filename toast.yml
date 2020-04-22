@@ -1,15 +1,12 @@
-image: ruby:2.6.5
+image: ubuntu:bionic
 tasks:
   install_build_deps:
     command: |
       apt update
-      apt install --yes build-essential
-  install_gems:
-    command: gem install bundler
+      DEBIAN_FRONTEND=noninteractive apt install --yes build-essential chef chef-zero ruby ruby-dev ruby-bundler sudo
   install:
     dependencies:
       - install_build_deps
-      - install_gems
     input_paths:
       - Gemfile
       - Gemfile.lock

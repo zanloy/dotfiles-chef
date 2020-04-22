@@ -1,3 +1,9 @@
+# Get the current user
+def current_user
+  require 'etc'
+  Etc.getpwuid['name']
+end
+
 # Always provide user dir, even if sudo'ed
 def wuser_dir(str = '.')
   File.join(Dir.home, str)

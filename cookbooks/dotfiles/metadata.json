@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "git": ">= 0.0.0",
-    "ruby_rbenv": ">= 0.0.0"
+    "ruby_rbenv": ">= 0.0.0",
+    "oh_my_zsh": ">= 0.0.0"
   },
   "providing": {
 

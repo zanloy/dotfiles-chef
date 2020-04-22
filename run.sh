@@ -1,3 +1,4 @@
 #!/bin/bash
 
-chef-client --chef-license accept-silent --local-mode --config solo.rb --override-runlist dotfiles::default
+export CHEF_LICENSE='accept-silent'
+chef-client --local-mode --config solo.rb --override-runlist dotfiles::default

@@ -2,4 +2,5 @@ source 'https://supermarket.chef.io'
 
 cookbook 'git'
 cookbook 'ruby_rbenv'
+cookbook 'oh_my_zsh'
 metadata
