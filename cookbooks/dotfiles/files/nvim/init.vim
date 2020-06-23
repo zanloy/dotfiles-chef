@@ -2,6 +2,33 @@
 "let &packpath=&runtimepath
 "source ~/.vimrc
 
+" Plugins
+let mapleader = ','
+call plug#begin('~/.config/nvim/plugged')
+Plug 'ctrlpvim/ctrlp.vim'
+Plug 'roxma/nvim-yarp'          " Required before deoplete
+Plug 'roxma/vim-hug-neovim-rpc' " Required before deoplete
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+Plug 'itchyny/lightline.vim'
+Plug 'scrooloose/nerdtree'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'christoomey/vim-tmux-runner'
+" Syntax and generic language specific
+Plug 'towolf/vim-helm'
+Plug 'slim-template/vim-slim'
+Plug 'tpope/vim-surround'
+" Ruby specific
+Plug 'tpope/vim-rails'
+Plug 'tpope/vim-rake'
+Plug 'danchoi/ri.vim'
+Plug 'thoughtbot/vim-rspec'
+Plug 'ngmy/vim-rubocop'
+" Colorschemes
+Plug 'chuling/equinusocio-material.vim'
+call plug#end()
+
 " Search down into subfolders
 " Provides tab-completion for all file-related tasks
 set path+=**
@@ -13,14 +40,6 @@ set wildmenu
 " Tags
 command! MakeTags !ctags -R .
 
-" Tweaks for browsing
-let g:netrw_banner=0 " disable annoying banner
-let g:netrw_browser_split=4 " open in prior window
-let g:netrw_altv=1          " open splits to the right
-let g:netrw_liststyle=3     " tree view
-let g:netrw_list_hide=netrw_gitignore#Hide()
-let g:netrw_list_hide.=',\(^\|\s\s\)\zs\.\S\+'
-
 " Tab navigation shortcuts
 nnoremap t$ :tabfirst<CR>
 nnoremap tl :tabnext<CR>
@@ -30,19 +49,10 @@ nnoremap tt :tabedit<Space>
 nnoremap tm :tabm<Space>
 nnoremap td :tabclose<CR>
 
-augroup HelpMaps
-  autocmd!
-  autocmd FileType help :nnoremap <buffer> <tab> /|.\{-}|<CR>
-  autocmd FileType help :nnoremap <buffer> <s-tab> ?|.\{-}|<CR>
-  autocmd FileType help :nnoremap <buffer> <cr> <C-j>
-  autocmd FileType help :nnoremap <buffer> <bs> <C-T>
-augroup END
-
 " Colors!
-set background=dark
-colorscheme solarized
-
-set number " give us line numbers on left
+set termguicolors " enable true (256 bit) colors
+"set background=dark
+colorscheme equinusocio_material
 
 " Snippets
 nnoremap ,begin :-1read $HOME/.config/nvim/snippets/begin.rb<CR>o
@@ -52,35 +62,34 @@ set expandtab
 set shiftwidth=2
 
 " Navigation
+set number " give us line numbers on left
 inoremap <C-d> <ESC>:q<CR> " Close file with ^d
 nnoremap <C-d> :q<CR>      " Close file with ^d
 nnoremap <C-f> scroll      " Fix ^f to scroll half screen to replace default ^d
 
-let mapleader = ','
+" FileTypes!
+augroup filetypes
+  autocmd!
+  autocmd BufNewFile,BufRead .gitignore set filetype=config
+augroup END
 
-" Time for some plugins
-call plug#begin('~/.config/nvim/plugged')
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'roxma/nvim-yarp'          " Required before deoplete
-Plug 'roxma/vim-hug-neovim-rpc' " Required before deoplete
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'tpope/vim-fugitive'
-Plug 'airblade/vim-gitgutter'
-Plug 'scrooloose/nerdtree'
-Plug 'thoughtbot/vim-rspec'
-Plug 'christoomey/vim-tmux-navigator'
-Plug 'christoomey/vim-tmux-runner'
-" Syntax and language specific
-Plug 'towolf/vim-helm'
-Plug 'tpope/vim-rails'
-Plug 'tpope/vim-rake'
-Plug 'danchoi/ri.vim'
-Plug 'ngmy/vim-rubocop'
-Plug 'slim-template/vim-slim'
-Plug 'tpope/vim-surround'
-call plug#end()
+" Search
+set gdefault             " assume /g on :s substitutions
+set ignorecase smartcase " ignore case in search if all lowercase
+set incsearch            " search incrementally
 
-" Plugin specific settings
+" Using system clipboard
+vnoremap <leader>y "+y
+nnoremap <leader>y "+y
+
+""""""""""""""""""""""""""""
+" Plugin specific settings "
+""""""""""""""""""""""""""""
+
+" lightline
+let g:lightline = {
+      \ 'colorscheme': 'equinusocio_material',
+      \ }
 
 " ctrlp
 " Change the default mapping and the default command to invoke CtrlP:
@@ -117,6 +126,13 @@ map <C-n> :NERDTreeToggle<CR>
 let g:NERDTreeQuitOnOpen = 1
 " close nerdtree if last buffer
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabFree()) | q | endif
+" Tweaks for browsing
+let g:netrw_banner=0        " disable annoying banner
+let g:netrw_browser_split=4 " open in prior window
+let g:netrw_altv=1          " open splits to the right
+let g:netrw_liststyle=3     " tree view
+let g:netrw_list_hide=netrw_gitignore#Hide()
+let g:netrw_list_hide.=',\(^\|\s\s\)\zs\.\S\+'
 
 " ri.vim: Change default mappings because they clash
 nnoremap <Leader>ri :call ri#OpenSearchPrompt(0)<cr> "horizontal split
@@ -128,25 +144,3 @@ map <Leader>t :call RunCurrentSpecFile()<CR>
 map <Leader>s :call RunNearestSpec()<CR>
 map <Leader>l :call RunLastSpec()<CR>
 map <Leader>a :call RunAllSpecs()<CR>
-
-" FileTypes!
-augroup filetypes
-  autocmd!
-  autocmd BufNewFile,BufRead .gitignore set filetype=config
-augroup END
-
-" Status bar
-set statusline=%F%m%r%h%w\ " fullpath and satus modified sign
-set statusline+=\ %y       " filetype
-set statusline+=\ %{fugitive#statusline()}
-" this line pushes everything below it to the right hand side
-set statusline+=%=
-set statusline+=\%l
-
-" Search
-set gdefault             " assume /g on :s substitutions
-set ignorecase smartcase " ignore case in search if all lowercase
-set incsearch            " search incrementally
-
-" Display non-display characters
-set listchars=eol:⏎,tab:␉·,trail:␠,nbsp:⎵
