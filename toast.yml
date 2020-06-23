@@ -1,12 +1,12 @@
 image: ubuntu:bionic
 tasks:
-  install_build_deps:
+  install_sudo:
     command: |
       apt update
-      DEBIAN_FRONTEND=noninteractive apt install --yes build-essential chef chef-zero ruby ruby-dev ruby-bundler sudo
+      DEBIAN_FRONTEND=noninteractive apt install --yes sudo
   install:
     dependencies:
-      - install_build_deps
+      - install_sudo
     input_paths:
       - Gemfile
       - Gemfile.lock

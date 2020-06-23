@@ -1,27 +1,42 @@
 #!/bin/bash
 
-# Verify we are not root.
-if [[ $(id -u) -eq 0 ]];
-then
-  echo 'This script should not be run as root. It will use sudo for necessary steps.'
-  exit 1
-fi
+export DEBIAN_FRONTEND=noninteractive
 
-exit 0
-install() {
-  if [[ ! -x $(which "$1") ]]
-  then
-    echo "$1 is not currently installed. Installing..."
-    sudo apt install -y ${2:-$1} || exit 1
-  fi
+apt_install() {
+  sudo apt install --yes $*
 }
 
-install curl
-install bundler ruby-bundler
+yum_install() {
+  yum install -y $*
+}
 
-bundle install
-if [[ ! -x $(which chef-client) ]]
-then
-  curl --silent -o /usr/local/bin/chef-client https://raw.githubusercontent.com/chef/chef/master/chef-bin/bin/chef-client
-  chmod +x /usr/local/bin/chef-client
-fi
+install() {
+  os_family=$(awk -F= '/^ID_LIKE=/{print $2}' /etc/os-release)
+  case $os_family in
+    *debian*) apt_install $*;;
+    *fedora*) yum_install $*;;
+    *) echo "Error trying to determine os_family or unsupported value $os_family" && exit 1;;
+  esac
+}
+
+# Install system dependencies
+install apt-transport-https build-essential curl ruby ruby-dev ruby-bundler sudo
+
+# Install chef
+CHANNEL='stable'
+CODENAME=$(grep 'UBUNTU_CODENAME=' /etc/os-release | cut -d'=' -f2)
+curl https://packages.chef.io/chef.asc | sudo apt-key add -
+echo "deb https://packages.chef.io/repos/apt/${CHANNEL} ${CODENAME} main" > "/etc/apt/sources.list.d/chef-${CHANNEL}.list"
+apt update
+apt install --yes chef chef-zero
+
+# Install ruby dependencies
+gem install bundler
+#bundle install
+
+## Validate chef-client is installed (not part of normal ubuntu package)
+#if [[ ! -x $(which chef-client) ]]
+#then
+#  curl --silent -o /usr/local/bin/chef-client https://raw.githubusercontent.com/chef/chef/master/chef-bin/bin/chef-client
+#  chmod +x /usr/local/bin/chef-client
+#fi

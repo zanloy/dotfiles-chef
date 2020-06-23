@@ -16,7 +16,9 @@ get_files_for('ruby').each do |file|
 end
 
 # Install rbenv
-rbenv_user_install username
+rbenv_user_install username do
+  update_rbenv false
+end
 
 # Install ruby-build plugin
 rbenv_plugin 'ruby-build' do
